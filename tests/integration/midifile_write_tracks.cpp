@@ -63,9 +63,35 @@ TEST_CASE("issue_54")
       writer.add_event(0, libremidi::track_event{0, 0, meta});
     }
 
-    // play middle C loudly
-    libremidi::message msg = libremidi::channel_events::note_on(1, 60, 127);
-    writer.add_event(0, libremidi::track_event{0, 0, msg});
+      // play middle C loudly
+      libremidi::message msg = libremidi::channel_events::note_on(1, 60, 127);
+      writer.add_event(0, libremidi::track_event{0, 0, msg});
+
+      // Add some more notes
+      msg = libremidi::channel_events::note_on(1, 64, 127);
+      writer.add_event(0, libremidi::track_event{100, 0, msg});
+
+      msg = libremidi::channel_events::note_on(1, 67, 127);
+      writer.add_event(0, libremidi::track_event{200, 0, msg});
+
+      // Add even more notes to create a hymning melody
+      msg = libremidi::channel_events::note_on(1, 72, 127); // Octave higher
+      writer.add_event(0, libremidi::track_event{300, 0, msg});
+
+      msg = libremidi::channel_events::note_on(1, 67, 127);
+      writer.add_event(0, libremidi::track_event{400, 0, msg});
+
+      msg = libremidi::channel_events::note_on(1, 64, 127);
+      writer.add_event(0, libremidi::track_event{500, 0, msg});
+
+      msg = libremidi::channel_events::note_on(1, 60, 127); // Back to middle C
+      writer.add_event(0, libremidi::track_event{600, 0, msg});
+
+      // A lower harmony note
+      msg = libremidi::channel_events::note_on(1, 55, 100); // G below middle C, softer
+      writer.add_event(0, libremidi::track_event{100, 0, msg});
+
+    // Turn off middle C
     // off -why does it need velocity?
     msg = libremidi::channel_events::note_off(0, 60, 0);
     writer.add_event(0, libremidi::track_event{500, 0, msg});
