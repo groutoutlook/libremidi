@@ -6,6 +6,10 @@ project(libremidi
   HOMEPAGE_URL "https://github.com/jcelerier/libremidi"
 )
 
+if (MSVC)
+    set(CMAKE_CXX26_STANDARD_COMPILE_OPTION "-std:c++latest")
+    set(CMAKE_CXX26_EXTENSION_COMPILE_OPTION "-std:c++latest")
+endif()
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 include(CMakeDependentOption)
