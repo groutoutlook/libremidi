@@ -12,7 +12,40 @@
 
 #include <array>
 #include <chrono>
+#include <coroutine>
+#include <generator>
 #include <thread>
+// Coroutine for scheduling notes
+struct MidiEvent
+{
+  struct promise_type
+  {
+    MidiEvent get_return_object() { return MidiEvent{}; }
+    std::suspend_always initial_suspend() { return {}; }
+    std::suspend_always final_suspend() noexcept { return {}; }
+    void return_void() { }
+    void unhandled_exception() { std::terminate(); }
+  };
+};
+
+// Generator function to yield scheduled MIDI events
+auto playMidiSequence(
+    libremidi::midi_out& midiout, const std::vector<std::tuple<int, int, int>>& sequence)
+    -> std::generator<std::tuple<int, int, int>>
+{
+  auto start_time = std::chrono::steady_clock::now();
+
+  for (const auto& [time, note, velocity] : sequence)
+  {
+    while (std::chrono::steady_clock::now() < start_time + std::chrono::milliseconds(time))
+    {
+      co_yield std::make_tuple(time, note, velocity); // Yield event for processing
+    }
+    midiout.send_message(144, note, velocity); // Note On
+    std::this_thread::sleep_for(std::chrono::milliseconds(300));
+    midiout.send_message(128, note, velocity / 2); // Note Off
+  }
+}
 
 int main(int argc, const char** argv)
 {
@@ -66,6 +99,44 @@ int main(int argc, const char** argv)
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
   }
 
+  std::vector<std::tuple<int, int, int>> happy_birthday = {
+      {0, 60, 100},    // C
+      {400, 60, 100},  // C
+      {800, 62, 100},  // D
+      {1200, 60, 100}, // C
+      {1600, 65, 100}, // F
+      {2000, 64, 100}, // E
+
+      {2800, 60, 100}, // C
+      {3200, 60, 100}, // C
+      {3600, 62, 100}, // D
+      {4000, 60, 100}, // C
+      {4400, 67, 100}, // G
+      {4800, 65, 100}, // F
+
+      {5600, 60, 100}, // C
+      {6000, 60, 100}, // C
+      {6400, 72, 100}, // High C
+      {6800, 69, 100}, // A
+      {7200, 65, 100}, // F
+      {7600, 64, 100}, // E
+      {8000, 62, 100}, // D
+
+      {8800, 70, 100},  // Bb
+      {9200, 70, 100},  // Bb
+      {9600, 69, 100},  // A
+      {10000, 65, 100}, // F
+      {10400, 67, 100}, // G
+      {10800, 65, 100}  // F
+  };
+
+  auto midi_gen = playMidiSequence(midiout, happy_birthday);
+
+  // Process MIDI events asynchronously
+  for (auto [time, note, velocity] : midi_gen)
+  {
+    std::cout << "Playing: " << note << " at " << time << "ms\n";
+  }
   std::this_thread::sleep_for(500ms);
 
   // Control Change: 176, 7, 40
