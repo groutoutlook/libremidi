@@ -35,7 +35,7 @@ build:
     cmake -S. -Bbuild
 
 alias t := soundtest
-default_midi := "build/x.mid"
+default_midi := "out\\build\\x64-debug\\x.mid"
 soundtest args=default_midi:
     vlc {{default_midi}}
 

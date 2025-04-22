@@ -94,3 +94,4 @@ build
 .vscode
 
 .vs
+CMakePresets.json

@@ -39,10 +39,12 @@ option(LIBREMIDI_NO_EXPORTS "Disable dynamic symbol exporting" OFF)
 option(LIBREMIDI_NO_BOOST "Do not use Boost if available" OFF)
 option(LIBREMIDI_SLIM_MESSAGE "Use a fixed-size message format" 0)
 option(LIBREMIDI_FIND_BOOST "Actively look for Boost" OFF)
-option(LIBREMIDI_EXAMPLES "Enable examples" OFF)
-option(LIBREMIDI_TESTS "Enable tests" OFF)
 option(LIBREMIDI_NI_MIDI2 "Enable compatibility with ni-midi2" OFF)
 option(LIBREMIDI_CI "To be enabled only in CI, some tests cannot run there. Also enables -Werror." OFF)
+
+
+set(LIBREMIDI_EXAMPLES OFF CACHE BOOL "Enable examples")
+set(LIBREMIDI_TESTS OFF CACHE BOOL "Enable tests")
 
 cmake_dependent_option(LIBREMIDI_NO_WARNINGS "Disables warnings from library compilation" OFF "NOT LIBREMIDI_HEADER_ONLY" ON)
 
