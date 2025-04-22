@@ -25,9 +25,10 @@ placeholder:
 
 # INFO: basic `run` recipe.
 alias r := run
-default_args := 'args here'
+default_binraies_path := 'out/build/x64-debug'
+default_args := 'midiout.exe'
 run args=default_args:
-    @Write-Host {{default_args}} -ForegroundColor Red
+    {{default_binraies_path}}/{{args}}
 
 
 alias b := build

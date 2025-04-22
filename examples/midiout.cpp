@@ -39,13 +39,32 @@ int main(int argc, const char** argv)
   // Control Change: 176, 7, 100 (volume)
   midiout.send_message(176, 7, 100);
 
-  // Note On: 144, 64, 90
-  midiout.send_message(144, 64, 90);
+  // Define notes and velocities
+  std::vector<std::tuple<int, int>> notes = {
+      {60, 100}, // C (Middle C)
+      {62, 90},  // D
+      {64, 95},  // E
+      {65, 110}, // F
+      {67, 105}, // G
+      {69, 100}, // A
+      {71, 95},  // B
+      {72, 120}, // C (Octave Higher)
+      {74, 90},  // D#
+      {76, 85},  // F
+      {77, 100}, // G#
+      {79, 110}, // B
+  };
 
-  std::this_thread::sleep_for(500ms);
+  for (const auto& [note, velocity] : notes)
+  {
+    // Note On
+    midiout.send_message(144, note, velocity);
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
-  // Note Off: 128, 64, 40
-  midiout.send_message(128, 64, 40);
+    // Note Off
+    midiout.send_message(128, note, velocity / 2);
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+  }
 
   std::this_thread::sleep_for(500ms);
 
